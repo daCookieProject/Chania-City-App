@@ -16,8 +16,8 @@ export class AboutPage {
 	myMarker:Marker;
 	testMarker:Array<Marker>;
 	gmap:GoogleMap;
+	listOrMap: string;
 	element:HTMLElement;
-	listOrMap:string;
 	items:  Array<Object>;
 	selectedItem: any;
 
@@ -25,6 +25,7 @@ export class AboutPage {
 	constructor(public navCtrl: NavController,public navParams: NavParams,public dataService: Data) {
 		this.listOrMap = "list";
 		this.testMarker=[];
+		
 		this.selectedItem = navParams.get('item');
 		if (this.dataService.clients == null) {console.log("in");this.dataService.queryListExecuter('SELECT * FROM Clients WHERE id < 10');}
 	}

@@ -14,9 +14,10 @@ import {LatLng} from '@ionic-native/google-maps';
 */
 @Injectable()
 export class Data {
-		foo:any;
 	public myLocation:LatLng;
 	watch:any;	
+	public queryNow: any;
+	public queryLast: any;
 	public geolocation:Geolocation;
 	private sqlite: SQLite;
 	public items: Array<{id: number, name: string}> ;
@@ -154,6 +155,7 @@ export class Data {
 	queryListExecuter(query){
 		
 		return new Promise((resolve, reject) => {
+			this.queryLast=query;
 			this.sqlite.create({
 			  name: 'data.db',
 			  location: 'default' 
