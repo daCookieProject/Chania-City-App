@@ -35,9 +35,17 @@ export class Data {
 		//Database
 		this.sqlite=new SQLite();
 		this.platform.ready().then(() => {
+		
+			this.sqlite.create({
+			  name: 'data.db',
+			  location: 'default' // the location field is required
+			  //iosDatabaseLocation needed for iOs devices
+			  
+			}).then((db: SQLiteObject) => {
+				this.getClientNames(db).
+				then(()=>{this.closeDB(db);});
+			});
 			
-			console.log("createTable");
-			this.createTable();
 			this.geObserve();
 		});	
 		
@@ -52,63 +60,68 @@ export class Data {
 	
 	
 	createTable(){
-		//open database
-		this.sqlite.create({
-		  name: 'data.db',
-		  location: 'default' // the location field is required
-		  //iosDatabaseLocation needed for iOs devices
-		  
-		}).then((db: SQLiteObject) => {
-				//create table if not exists 
-				db.executeSql('CREATE TABLE IF NOT EXISTS Clients(id INTEGER PRIMARY KEY, name VARCHAR(32), email VARCHAR(32), adress VARCHAR(32), latitude DECIMAL(10,7), longtitude DECIMAL(10,7), number VARCHAR(32),favourite BOOLEAN);', {})////(6,4)->(9,7)
-				.then(() => {
-					console.log("Table created!");
-					//Clear table and insert values
-					db.executeSql('DELETE FROM Clients;', {})
+		return new Promise((resolve, reject) => {
+			//alert("Updating Database...");
+			//open database
+			this.sqlite.create({
+			  name: 'data.db',
+			  location: 'default' // the location field is required
+			  //iosDatabaseLocation needed for iOs devices
+			  
+			}).then((db: SQLiteObject) => {
+					//create table if not exists 
+					db.executeSql('CREATE TABLE IF NOT EXISTS Clients(id INTEGER PRIMARY KEY, name VARCHAR(32), email VARCHAR(32), adress VARCHAR(32), latitude DECIMAL(10,7), longtitude DECIMAL(10,7), number VARCHAR(32),favourite BOOLEAN);', {})////(6,4)->(9,7)
 					.then(() => {
-						console.log("Table clear! /n Inserting Data..");
-						//insert Client Data
-						this.checkUpdate().then(()=>{
-							
-							for(let pop in this.cloudclients) {
-								this.insertClient(db,
-									this.cloudclients[pop].id,
-									this.cloudclients[pop].name,
-									this.cloudclients[pop].email,
-									this.cloudclients[pop].adress,
-									this.cloudclients[pop].latitude,
-									this.cloudclients[pop].longtitude,
-									this.cloudclients[pop].number,
-									this.cloudclients[pop].favourite
+						console.log("Table created!");
+						//Clear table and insert values
+						db.executeSql('DELETE FROM Clients;', {})
+						.then(() => {
+							console.log("Table clear! /n Inserting Data..");
+							//insert Client Data
+							this.checkUpdate().then(()=>{
 								
-								);
-							}						
-							this.getClientNames(db).then(()=>{ this.closeDB(db); });
-						
+								for(let pop in this.cloudclients) {
+									this.insertClient(db,
+										this.cloudclients[pop].id,
+										this.cloudclients[pop].name,
+										this.cloudclients[pop].email,
+										this.cloudclients[pop].adress,
+										this.cloudclients[pop].latitude,
+										this.cloudclients[pop].longtitude,
+										this.cloudclients[pop].number,
+										this.cloudclients[pop].favourite
+									
+									);
+								}						
+								this.getClientNames(db).then(()=>{ this.closeDB(db); resolve();});
+							
+							});
+							
+						}, (error)=>{
+							console.log("Unable to clear table: "+error);
+							reject(error);
 						});
-						
-					}, (error)=>{
-						console.log("Unable to clear table: "+error);
+					}, (err) => {
+						console.log('Unable to to create  table: ', err);
+						reject(err);
 					});
-				}, (err) => {
-					console.log('Unable to to create  table: ', err);
-				});
-				
+					
 
-		}, (err) => {
-		  console.error('Unable to open database: ', err);
+			}, (err) => {
+			  console.error('Unable to open database: ', err);
+			});
+				
 		});
-			
-	}
-	
-    insertClient(db,id,name,email,adress,latitude,longtitude,phonenumber,favourite){
-        db.executeSql('INSERT  INTO Clients (id,name,email,adress,latitude,longtitude,number,favourite) VALUES (?,?,?,?,?,?,?,?)' ,[id,name,email,adress,latitude,longtitude,phonenumber,favourite], {})
-        .then(() => {
-            console.log("Inserted Client "+id+","+name+","+email+","+adress+","+latitude+","+longtitude+","+phonenumber+","+favourite);                        
-        }, (error)=>{
-            console.log("Unable to insert client : "+error);
-        });
-    }
+	}	
+	insertClient(db,id,name,email,adress,latitude,longtitude,phonenumber,favourite){
+		db.executeSql('INSERT  INTO Clients (id,name,email,adress,latitude,longtitude,number,favourite) VALUES (?,?,?,?,?,?,?,?)' ,[id,name,email,adress,latitude,longtitude,phonenumber,favourite], {})
+		.then(() => {
+			console.log("Inserted Client "+id+","+name+","+email+","+adress+","+latitude+","+longtitude+","+phonenumber+","+favourite);                        
+		}, (error)=>{
+			console.log("Unable to insert client : "+error);
+		});
+	}	
+    
 	
 
 		
@@ -155,7 +168,7 @@ export class Data {
 	queryListExecuter(query){
 		
 		return new Promise((resolve, reject) => {
-			this.queryLast=query;
+	
 			this.sqlite.create({
 			  name: 'data.db',
 			  location: 'default' 

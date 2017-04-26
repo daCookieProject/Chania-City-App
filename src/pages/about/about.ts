@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController,NavParams} from 'ionic-angular';
+import { NavController,NavParams,LoadingController} from 'ionic-angular';
 import {GoogleMap, GoogleMapsEvent, LatLng,MarkerOptions,Marker} from '@ionic-native/google-maps';
 import { Data } from '../../providers/data';
 import 'rxjs/add/operator/map';
@@ -20,13 +20,12 @@ export class AboutPage {
 	element:HTMLElement;
 	items:  Array<Object>;
 	selectedItem: any;
-
+	loading : any;
 	
-	constructor(public navCtrl: NavController,public navParams: NavParams,public dataService: Data) {
+	constructor(public navCtrl: NavController,public navParams: NavParams,public dataService: Data,public loadingCtrl: LoadingController) {
 		this.listOrMap = "list";
 		this.testMarker=[];
 		
-		this.selectedItem = navParams.get('item');
 		if (this.dataService.clients == null) {console.log("in");this.dataService.queryListExecuter('SELECT * FROM Clients WHERE id < 10');}
 	}
 
@@ -42,12 +41,20 @@ export class AboutPage {
 			this.element = document.getElementById('map');		
 			console.log("--- delay 1 ---");
 			if (event.value == "map"){
+				this.presentLoadingCustom();
 				this.loadMap();
 			}	
 		}, 1);
 	}
 	
-
+	
+	
+	presentLoadingCustom() {
+	this.loading = this.loadingCtrl.create({
+		spinner: 'hide',
+		content: `<div class="custom-spinner-container"> <div class="custom-spinner-box"></div>  </div>` 
+	});
+	}
 /////////////////////////////////     loadMap()             ///////////////////////////////////////////////
 	
 	
@@ -62,6 +69,7 @@ export class AboutPage {
 
 
 					this.gmap.one(GoogleMapsEvent.MAP_READY).then(() => {
+						
 					 // move the map's camera to position
 						this.gmap.animateCamera({
 						  'target': this.dataService.myLocation,
@@ -79,9 +87,12 @@ export class AboutPage {
 						this.gmap.addMarker(myMarkerOptions).then((marker)=>{
 							this.myMarker = marker;
 							this.myMarker.showInfoWindow();
-						}).then(()=>{this.afterMapLoad();});						
+						}).then(()=>{
+							this.loading.dismiss();
+							this.afterMapLoad();
+						});						
 							
-	
+					
 						
 					});
 		}, 1);

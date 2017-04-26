@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Data } from '../../providers/data';
-import { NavController } from 'ionic-angular';
+import { NavController , LoadingController} from 'ionic-angular';
 import { FormControl } from '@angular/forms';
 import 'rxjs/add/operator/debounceTime';
 	
@@ -16,8 +16,9 @@ export class HomePage {
     items:  Array<Object>;
     searching: any = false;
     suggestOrNot: any = true;
+	loading:any;
 	
-    constructor(public navCtrl: NavController, public dataService: Data) {
+    constructor(public navCtrl: NavController, public dataService: Data,public loadingCtrl: LoadingController) {
 		this.searchControl = new FormControl();
     }
 
@@ -47,7 +48,18 @@ export class HomePage {
             this.navCtrl.parent.select(1);
         });
     }
-
+	refresh() {
+		this.presentLoadingCustom();
+		this.dataService.createTable().then(()=>{this.loading.dismiss();});
+	}
+		
+	presentLoadingCustom() {
+		this.loading = this.loadingCtrl.create({
+		spinner: 'hide',
+		content: `<div class="custom-spinner-container"> <div class="custom-spinner-box"></div>  </div>` ,
+		duration:5000
+	});
+	}
 	
     onSearchInput(){
         this.searching = true;
