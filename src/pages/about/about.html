@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      List / Map   View
+    </ion-title>
+  </ion-navbar>
+  
+  
+    <ion-toolbar>
+    <ion-segment [(ngModel)]="listOrMap" (ionChange)="onSegmentChange($event)">
+      <ion-segment-button value="list">
+        <ion-icon name="list"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="map">
+        <ion-icon name="map"></ion-icon>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+  
+  
+  
+</ion-header>
+
+<ion-content>
+  <div class="map-wrapper" [ngSwitch]="listOrMap">
+	
+	<div class="map-wrapper" *ngSwitchCase="'list'">
+    <div #map id="map">
+	<ion-list>
+      <ion-item>
+		  <ion-list>
+			<button ion-item *ngFor="let item of dataService.clients" (click)="itemTapped($event, item)">
+
+			  {{item.name}}
+			  <div class="item-note" item-right>
+				{{item.distance}}
+			  </div>
+				
+			</button>
+		  </ion-list>
+      </ion-item>
+	</ion-list> 
+	</div>
+	</div>
+    <div class="map-wrapper" *ngSwitchCase="'map'">
+        <div #map id="map"></div>
+     </div>
+
+  </div>
+</ion-content>

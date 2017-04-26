@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Home</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+<ion-searchbar [(ngModel)]="searchTerm" [formControl]="searchControl" (ionInput)="onSearchInput()"></ion-searchbar>
+   
+   <div *ngIf="searching" class="spinner-container">
+       <ion-spinner></ion-spinner>
+   </div>
+
+    <ion-list inset no-lines class="searchContainer">
+        <ion-item *ngFor="let item of items" (click)="itemSelected(item)">
+            {{item.name}}
+        </ion-item>
+    </ion-list>
+	
+	<button ion-button color="light" (click)="male()" round>Male</button>
+    <button ion-button color="light" (click)="female()" round>Female</button>
+	
+</ion-content>
