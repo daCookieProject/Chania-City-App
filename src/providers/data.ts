@@ -122,6 +122,8 @@ export class Data {
 	getClientNames(db){
 		
 		return new Promise((resolve, reject) => {
+			
+			
 				console.log(" client names bitch!!");
 				db.executeSql("SELECT id,name FROM Clients WHERE 1=1", [])
 				.then((resultSet) => {
