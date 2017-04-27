@@ -43,7 +43,7 @@ export class HomePage {
     }
     
     testQuery2(){
-			let query="SELECT * FROM Clients WHERE favourite = '1'";
+			let query="SELECT * FROM Clients WHERE favourite = 'true'";
 			this.dataService.queryListExecuter(query).then(()=>{
 			console.log("this.items.length:"+ this.dataService.items.length);
             console.log("this.clients.length:"+ this.dataService.clients.length);

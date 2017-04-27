@@ -14,23 +14,20 @@ import {LatLng} from '@ionic-native/google-maps';
 */
 @Injectable()
 export class Data {
-	public myLocation:LatLng;
-	watch:any;	
-	public geolocation:Geolocation;
+	public myLocation : LatLng;
+	watch : any;	
+	public geolocation : Geolocation;
+	public selectedItem : any;
 	private sqlite: SQLite;
 	public items: Array<{id: number, name: string}> ;
 	public clients: Array<{id: number, name: string, email: string, adress: string, latitude: number, longtitude: number, phonenumber: string, favourite: boolean, distance:number}> = null;
 	public cloudclients: any;
-	private http:any;
+	private http : any;
+	
 	constructor(public platform: Platform, public chttp: Http) { 
 		this.geolocation = new Geolocation;
 		this.http= this.chttp;
-		
-		
 		this.myLocation=new LatLng(35.514019,24.020329);
-		
-		
-		//Database
 		this.sqlite=new SQLite();
 		this.platform.ready().then(() => {
 		
@@ -326,6 +323,6 @@ export class Data {
         return x * Math.PI / 180;
     }
 
-	
+
 	
 }

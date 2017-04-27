@@ -136,30 +136,15 @@ export class AboutPage {
 
 		});		
 	}
-	
 
 	itemTapped(event, item) {
-   // That's right, we're pushing to ourselves!
+		this.dataService.selectedItem = item;
+		console.log("item name:"+this.dataService.selectedItem.name);
 		this.navCtrl.parent.select(2);	
-	}
-	
+	}	
 
 
 
-////////////////// company query ////////////////////////////////
 
-	testQuery1(){
-		let query="SELECT * FROM Clients";
-		this.dataService.queryListExecuter(query).then(()=>{
-            console.log("this.items.length:"+ this.dataService.items.length);
-            console.log("this.clients.length:"+ this.dataService.clients.length);
-			this.navCtrl.parent.select(1);
-        });
-    }	
-		
-
-	
-
-	
 	
 }

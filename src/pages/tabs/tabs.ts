@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Data } from '../../providers/data';
 import { HomePage } from '../home/home';
 import { AboutPage } from '../about/about';
 import { ContactPage } from '../contact/contact';
@@ -17,13 +16,4 @@ export class TabsPage {
 	  constructor() {
 
 	  }
-  
-  	ngAfterViewInit() {
-		console.log("ngAfterViewInit()");
-	}
-  
-  
-  
-  
-  
 }
