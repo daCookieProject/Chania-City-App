@@ -20,9 +20,11 @@ export class HomePage {
 	
     constructor(public navCtrl: NavController, public dataService: Data,public loadingCtrl: LoadingController) {
 		this.searchControl = new FormControl();
+		this.presentLoadingDefault();
     }
 
-    ionViewDidLoad() {
+    ngAfterViewInit() {
+		console.log("ngAfterViewInit()");
         //Wait for more input-Avoid spam call
         this.searchControl.valueChanges.debounceTime(900)
         .subscribe(search => {
@@ -31,8 +33,8 @@ export class HomePage {
         });
     } 
 
-	male(){
-			let query="SELECT * FROM Clients ";
+	testQuery1(){
+			let query="SELECT * FROM Clients";
 			this.dataService.queryListExecuter(query).then(()=>{
             console.log("this.items.length:"+ this.dataService.items.length);
             console.log("this.clients.length:"+ this.dataService.clients.length);
@@ -40,8 +42,8 @@ export class HomePage {
         });
     }
     
-    female(){
-			let query="SELECT * FROM Clients WHERE favourite";
+    testQuery2(){
+			let query="SELECT * FROM Clients WHERE favourite = '1'";
 			this.dataService.queryListExecuter(query).then(()=>{
 			console.log("this.items.length:"+ this.dataService.items.length);
             console.log("this.clients.length:"+ this.dataService.clients.length);
@@ -49,19 +51,17 @@ export class HomePage {
         });
     }
 	refresh() {
-		this.presentLoadingCustom();
+		this.loading.present();
 		this.dataService.createTable().then(()=>{this.loading.dismiss();});
 	}
 		
-	presentLoadingCustom() {
-		this.loading = this.loadingCtrl.create({
-		spinner: 'hide',
-		content: `<div class="custom-spinner-container"> <div class="custom-spinner-box"></div>  </div>` ,
-		duration:5000
-	});
+	presentLoadingDefault() {
+	  this.loading = this.loadingCtrl.create({
+		content: 'Please wait...'
+	  });
 	}
 	
-    onSearchInput(){
+    onSearchInput(){	
         this.searching = true;
         this.suggestOrNot = true;
     }

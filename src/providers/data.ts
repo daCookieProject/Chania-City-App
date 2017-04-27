@@ -16,8 +16,6 @@ import {LatLng} from '@ionic-native/google-maps';
 export class Data {
 	public myLocation:LatLng;
 	watch:any;	
-	public queryNow: any;
-	public queryLast: any;
 	public geolocation:Geolocation;
 	private sqlite: SQLite;
 	public items: Array<{id: number, name: string}> ;

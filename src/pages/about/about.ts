@@ -19,19 +19,18 @@ export class AboutPage {
 	listOrMap: string;
 	element:HTMLElement;
 	items:  Array<Object>;
-	selectedItem: any;
 	loading : any;
 	
 	constructor(public navCtrl: NavController,public navParams: NavParams,public dataService: Data,public loadingCtrl: LoadingController) {
 		this.listOrMap = "list";
 		this.testMarker=[];
-		
+		this.presentLoadingDefault();
 		if (this.dataService.clients == null) {console.log("in");this.dataService.queryListExecuter('SELECT * FROM Clients WHERE id < 10');}
 	}
 
 	// Load map only after view is initialized
 	ngAfterViewInit() {
-
+		console.log("ngAfterViewInit()");
 	}
 	
 	
@@ -41,19 +40,18 @@ export class AboutPage {
 			this.element = document.getElementById('map');		
 			console.log("--- delay 1 ---");
 			if (event.value == "map"){
-				this.presentLoadingCustom();
+				this.loading.present();
 				this.loadMap();
 			}	
 		}, 1);
 	}
 	
 	
-	
-	presentLoadingCustom() {
-	this.loading = this.loadingCtrl.create({
-		spinner: 'hide',
-		content: `<div class="custom-spinner-container"> <div class="custom-spinner-box"></div>  </div>` 
-	});
+////////LOADING         ////////////////////////////////////////////	
+	presentLoadingDefault() {
+	  this.loading = this.loadingCtrl.create({
+		content: 'Please wait...'
+	  });
 	}
 /////////////////////////////////     loadMap()             ///////////////////////////////////////////////
 	
@@ -148,9 +146,16 @@ export class AboutPage {
 
 
 
-////////////////// DANGER ZONE ////////////////////////////////
+////////////////// company query ////////////////////////////////
 
-		
+	testQuery1(){
+		let query="SELECT * FROM Clients";
+		this.dataService.queryListExecuter(query).then(()=>{
+            console.log("this.items.length:"+ this.dataService.items.length);
+            console.log("this.clients.length:"+ this.dataService.clients.length);
+			this.navCtrl.parent.select(1);
+        });
+    }	
 		
 
 	
