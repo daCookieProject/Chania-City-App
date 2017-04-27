@@ -10,7 +10,7 @@ export class ContactPage {
 
 	
 	  constructor(public navCtrl: NavController,public dataService: Data) {
-			console.log("item name:"+this.dataService.selectedItem.name);
+
 	  }
 
 }

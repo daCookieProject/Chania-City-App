@@ -40,8 +40,13 @@ export class Data {
 				this.getClientNames(db).
 				then(()=>{this.closeDB(db);});
 			});
-			
-			this.geObserve();
+/* 		if (this.clients == null) {
+			  this.queryListExecuter('SELECT * FROM Clients WHERE id = 1');
+			  this.selectedItem = this.clients[0];
+			  console.log("Sel item name:"+ this.selectedItem.name);
+			 } */
+		this.geObserve();
+
 		});	
 		
 	}

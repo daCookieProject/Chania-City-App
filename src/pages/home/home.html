@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>Home</ion-title>
+    <ion-title>Chania City App</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -16,9 +16,9 @@
             {{item.name}}
         </ion-item>
     </ion-list>
-	
-	<button ion-button block color="secondary" (click)="testQuery1()" >All</button>
-    <button ion-button block color="secondary" (click)="testQuery2()" >Favourites</button>
+	<button ion-button block color="danger" (click)="search(item)" >Search</button>
+	<button ion-button block color="dark" (click)="testQuery1()" >All</button>
+    <button ion-button block color="dark" (click)="testQuery2()" >Favourites</button>
     <button ion-button block color="danger" (click)="refresh()" >Refresh DB</button>
 	
 </ion-content>

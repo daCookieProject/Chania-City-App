@@ -77,8 +77,12 @@ export class HomePage {
 	
     //on click from suggestions
     itemSelected(item){
-        console.log("Item clicked! \n item id: "+item.id);
+        this.searchTerm = item.name;
         this.suggestOrNot = false;
     }	
 	
+	search(item){
+		console.log("Search for:"+this.searchTerm);
+	}
+
 }
