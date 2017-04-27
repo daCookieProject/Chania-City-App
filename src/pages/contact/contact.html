@@ -1,17 +1,18 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Contact
+      {{this.dataService.selectedItem.name}}
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-list-header>Follow us on Twitter</ion-list-header>
-    <ion-item>
-      <ion-icon name="ionic" item-left></ion-icon>
-      @ionicframework
-    </ion-item>
-  </ion-list>
+	  <ion-item>Address: {{this.dataService.selectedItem.adress}}</ion-item>
+	  <ion-item>Distance: {{this.dataService.selectedItem.distance}} km</ion-item>
+	  <ion-item>
+	      <ion-title>Contact info:</ion-title>
+		  <a ion-button block color="dark" href="tel:{{this.dataService.selectedItem.phonenumber}}">Call: {{this.dataService.selectedItem.phonenumber}}</a>
+		  <a ion-button block color="dark" href="mailto:{{this.dataService.selectedItem.email}}">E-mail: {{this.dataService.selectedItem.email}}</a>
+	  </ion-item>
+
 </ion-content>

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Data } from '../../providers/data';
-import { NavController } from 'ionic-angular';
+import { NavController , LoadingController} from 'ionic-angular';
 import { FormControl } from '@angular/forms';
 import 'rxjs/add/operator/debounceTime';
 	
@@ -16,12 +16,15 @@ export class HomePage {
     items:  Array<Object>;
     searching: any = false;
     suggestOrNot: any = true;
+	loading:any;
 	
-    constructor(public navCtrl: NavController, public dataService: Data) {
+    constructor(public navCtrl: NavController, public dataService: Data,public loadingCtrl: LoadingController) {
 		this.searchControl = new FormControl();
+		this.presentLoadingDefault();
     }
 
-    ionViewDidLoad() {
+    ngAfterViewInit() {
+		console.log("ngAfterViewInit()");
         //Wait for more input-Avoid spam call
         this.searchControl.valueChanges.debounceTime(900)
         .subscribe(search => {
@@ -30,8 +33,8 @@ export class HomePage {
         });
     } 
 
-	male(){
-			let query="SELECT * FROM Clients ";
+	testQuery1(){
+			let query="SELECT * FROM Clients";
 			this.dataService.queryListExecuter(query).then(()=>{
             console.log("this.items.length:"+ this.dataService.items.length);
             console.log("this.clients.length:"+ this.dataService.clients.length);
@@ -39,17 +42,26 @@ export class HomePage {
         });
     }
     
-    female(){
-			let query="SELECT * FROM Clients WHERE favourite";
+    testQuery2(){
+			let query="SELECT * FROM Clients WHERE favourite = 'true'";
 			this.dataService.queryListExecuter(query).then(()=>{
 			console.log("this.items.length:"+ this.dataService.items.length);
             console.log("this.clients.length:"+ this.dataService.clients.length);
             this.navCtrl.parent.select(1);
         });
     }
-
+	refresh() {
+		this.loading.present();
+		this.dataService.createTable().then(()=>{this.loading.dismiss();});
+	}
+		
+	presentLoadingDefault() {
+	  this.loading = this.loadingCtrl.create({
+		content: 'Please wait...'
+	  });
+	}
 	
-    onSearchInput(){
+    onSearchInput(){	
         this.searching = true;
         this.suggestOrNot = true;
     }
@@ -65,8 +77,12 @@ export class HomePage {
 	
     //on click from suggestions
     itemSelected(item){
-        console.log("Item clicked! \n item id: "+item.id);
+        this.searchTerm = item.name;
         this.suggestOrNot = false;
     }	
 	
+	search(item){
+		console.log("Search for:"+this.searchTerm);
+	}
+
 }

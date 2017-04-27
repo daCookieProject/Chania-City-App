@@ -14,30 +14,39 @@ import {LatLng} from '@ionic-native/google-maps';
 */
 @Injectable()
 export class Data {
-		foo:any;
-	public myLocation:LatLng;
-	watch:any;	
-	public geolocation:Geolocation;
+	public myLocation : LatLng;
+	watch : any;	
+	public geolocation : Geolocation;
+	public selectedItem : any;
 	private sqlite: SQLite;
 	public items: Array<{id: number, name: string}> ;
 	public clients: Array<{id: number, name: string, email: string, adress: string, latitude: number, longtitude: number, phonenumber: string, favourite: boolean, distance:number}> = null;
 	public cloudclients: any;
-	private http:any;
+	private http : any;
+	
 	constructor(public platform: Platform, public chttp: Http) { 
 		this.geolocation = new Geolocation;
 		this.http= this.chttp;
-		
-		
 		this.myLocation=new LatLng(35.514019,24.020329);
-		
-		
-		//Database
 		this.sqlite=new SQLite();
 		this.platform.ready().then(() => {
-			
-			console.log("createTable");
-			this.createTable();
-			this.geObserve();
+		
+			this.sqlite.create({
+			  name: 'data.db',
+			  location: 'default' // the location field is required
+			  //iosDatabaseLocation needed for iOs devices
+			  
+			}).then((db: SQLiteObject) => {
+				this.getClientNames(db).
+				then(()=>{this.closeDB(db);});
+			});
+/* 		if (this.clients == null) {
+			  this.queryListExecuter('SELECT * FROM Clients WHERE id = 1');
+			  this.selectedItem = this.clients[0];
+			  console.log("Sel item name:"+ this.selectedItem.name);
+			 } */
+		this.geObserve();
+
 		});	
 		
 	}
@@ -51,63 +60,68 @@ export class Data {
 	
 	
 	createTable(){
-		//open database
-		this.sqlite.create({
-		  name: 'data.db',
-		  location: 'default' // the location field is required
-		  //iosDatabaseLocation needed for iOs devices
-		  
-		}).then((db: SQLiteObject) => {
-				//create table if not exists 
-				db.executeSql('CREATE TABLE IF NOT EXISTS Clients(id INTEGER PRIMARY KEY, name VARCHAR(32), email VARCHAR(32), adress VARCHAR(32), latitude DECIMAL(10,7), longtitude DECIMAL(10,7), number VARCHAR(32),favourite BOOLEAN);', {})////(6,4)->(9,7)
-				.then(() => {
-					console.log("Table created!");
-					//Clear table and insert values
-					db.executeSql('DELETE FROM Clients;', {})
+		return new Promise((resolve, reject) => {
+			//alert("Updating Database...");
+			//open database
+			this.sqlite.create({
+			  name: 'data.db',
+			  location: 'default' // the location field is required
+			  //iosDatabaseLocation needed for iOs devices
+			  
+			}).then((db: SQLiteObject) => {
+					//create table if not exists 
+					db.executeSql('CREATE TABLE IF NOT EXISTS Clients(id INTEGER PRIMARY KEY, name VARCHAR(32), email VARCHAR(32), adress VARCHAR(32), latitude DECIMAL(10,7), longtitude DECIMAL(10,7), number VARCHAR(32),favourite BOOLEAN);', {})////(6,4)->(9,7)
 					.then(() => {
-						console.log("Table clear! /n Inserting Data..");
-						//insert Client Data
-						this.checkUpdate().then(()=>{
-							
-							for(let pop in this.cloudclients) {
-								this.insertClient(db,
-									this.cloudclients[pop].id,
-									this.cloudclients[pop].name,
-									this.cloudclients[pop].email,
-									this.cloudclients[pop].adress,
-									this.cloudclients[pop].latitude,
-									this.cloudclients[pop].longtitude,
-									this.cloudclients[pop].number,
-									this.cloudclients[pop].favourite
+						console.log("Table created!");
+						//Clear table and insert values
+						db.executeSql('DELETE FROM Clients;', {})
+						.then(() => {
+							console.log("Table clear! /n Inserting Data..");
+							//insert Client Data
+							this.checkUpdate().then(()=>{
 								
-								);
-							}						
-							this.getClientNames(db).then(()=>{ this.closeDB(db); });
-						
+								for(let pop in this.cloudclients) {
+									this.insertClient(db,
+										this.cloudclients[pop].id,
+										this.cloudclients[pop].name,
+										this.cloudclients[pop].email,
+										this.cloudclients[pop].adress,
+										this.cloudclients[pop].latitude,
+										this.cloudclients[pop].longtitude,
+										this.cloudclients[pop].number,
+										this.cloudclients[pop].favourite
+									
+									);
+								}						
+								this.getClientNames(db).then(()=>{ this.closeDB(db); resolve();});
+							
+							});
+							
+						}, (error)=>{
+							console.log("Unable to clear table: "+error);
+							reject(error);
 						});
-						
-					}, (error)=>{
-						console.log("Unable to clear table: "+error);
+					}, (err) => {
+						console.log('Unable to to create  table: ', err);
+						reject(err);
 					});
-				}, (err) => {
-					console.log('Unable to to create  table: ', err);
-				});
-				
+					
 
-		}, (err) => {
-		  console.error('Unable to open database: ', err);
+			}, (err) => {
+			  console.error('Unable to open database: ', err);
+			});
+				
 		});
-			
-	}
-	
-    insertClient(db,id,name,email,adress,latitude,longtitude,phonenumber,favourite){
-        db.executeSql('INSERT  INTO Clients (id,name,email,adress,latitude,longtitude,number,favourite) VALUES (?,?,?,?,?,?,?,?)' ,[id,name,email,adress,latitude,longtitude,phonenumber,favourite], {})
-        .then(() => {
-            console.log("Inserted Client "+id+","+name+","+email+","+adress+","+latitude+","+longtitude+","+phonenumber+","+favourite);                        
-        }, (error)=>{
-            console.log("Unable to insert client : "+error);
-        });
-    }
+	}	
+	insertClient(db,id,name,email,adress,latitude,longtitude,phonenumber,favourite){
+		db.executeSql('INSERT  INTO Clients (id,name,email,adress,latitude,longtitude,number,favourite) VALUES (?,?,?,?,?,?,?,?)' ,[id,name,email,adress,latitude,longtitude,phonenumber,favourite], {})
+		.then(() => {
+			console.log("Inserted Client "+id+","+name+","+email+","+adress+","+latitude+","+longtitude+","+phonenumber+","+favourite);                        
+		}, (error)=>{
+			console.log("Unable to insert client : "+error);
+		});
+	}	
+    
 	
 
 		
@@ -154,6 +168,7 @@ export class Data {
 	queryListExecuter(query){
 		
 		return new Promise((resolve, reject) => {
+	
 			this.sqlite.create({
 			  name: 'data.db',
 			  location: 'default' 
@@ -313,6 +328,6 @@ export class Data {
         return x * Math.PI / 180;
     }
 
-	
+
 	
 }
